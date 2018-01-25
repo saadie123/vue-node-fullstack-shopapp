@@ -1,5 +1,6 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const router = express.Router();
 
@@ -18,9 +19,31 @@ router.post('/signup',(req,res,next)=>{
             address: req.body.address
         });
         user.save().then(user=>{
-            res.status(201).send({user,message:"Registered Successfuly. You can login to your account now!"});
+            var token = jwt.sign({userId:user._id,name:user.name,email:user.email,phone:user.phone,address:user.address},'iusecrazystring',{
+                expiresIn: '1h'
+            });
+            res.status(201).send({token,message:"Registered Successfuly. You are now logged in!"});
         }).catch(e=>{
             res.status(400).send(e);
+        });
+    });
+});
+
+router.post('/login',(req,res,next)=>{
+    User.findOne({email:req.body.email}).then(user=>{
+        if(!user){
+            return res.status(404).send({message:"Email or password is incorrect!"});
+        };
+        bcrypt.compare(req.body.password,user.password,(err,result)=>{
+            if(result){
+                var token = jwt.sign({userId:user._id,name:user.name,email:user.email,phone:user.phone,address:user.address},'iusecrazystring',{
+                    expiresIn: '1h'
+                });
+                res.status(200).send({token,message:"You have successfuly logged in!"});
+            }
+            else{
+                res.status(404).send({message:"Email or password is incorrent!"})
+            }
         });
     });
 });

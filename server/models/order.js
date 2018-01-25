@@ -16,6 +16,11 @@ var orderSchema = mongoose.Schema({
     ],
     createdAt: {
         type: String
+    },
+    user:{
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'User'
     }
 });
 

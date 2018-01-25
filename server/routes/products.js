@@ -1,7 +1,7 @@
 const express = require('express');
 
 const router = express.Router();
-
+const checkAuth = require('../middleware/check-auth');
 const Product = require('../models/product');
 
 router.get('/',(req,res,next)=>{
@@ -26,7 +26,7 @@ router.get('/:id',(req,res,next)=>{
     });
 })
 
-router.post('/',(req,res,next)=>{
+router.post('/',checkAuth,(req,res,next)=>{
     var product = new Product({
         name: req.body.name,
         price: req.body.price,
@@ -39,7 +39,7 @@ router.post('/',(req,res,next)=>{
         res.status(400).send(e);
     });
 })
-router.patch('/:id',(req,res,next)=>{
+router.patch('/:id',checkAuth,(req,res,next)=>{
     const id = req.params.id;
     var body = req.body
     Product.findByIdAndUpdate(id,{$set:body},{new:true})
@@ -49,7 +49,7 @@ router.patch('/:id',(req,res,next)=>{
         res.status(400).send(e);
     });
 })
-router.delete('/:id',(req,res,next)=>{
+router.delete('/:id',checkAuth,(req,res,next)=>{
     const id = req.params.id;
     Product.findByIdAndRemove(id).then(product=>{
         if(!product){

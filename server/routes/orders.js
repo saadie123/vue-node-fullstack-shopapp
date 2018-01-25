@@ -2,11 +2,11 @@ const express = require('express');
 const moment = require('moment');
 
 const router = express.Router();
+const checkAuth = require('../middleware/check-auth');
+const Order = require('../models/order');
 
-const Order = require('../models/order')
-
-router.get('/',(req,res,next)=>{
-    Order.find().populate("products.product").then(orders=>{
+router.get('/',checkAuth,(req,res,next)=>{
+    Order.find({user:req.userData.userId}).populate("products.product").then(orders=>{
         if(!orders){
             return res.status(404).send("No orders were found");
         }
@@ -16,10 +16,11 @@ router.get('/',(req,res,next)=>{
     })
 })
 
-router.post('/',(req,res,next)=>{
+router.post('/',checkAuth,(req,res,next)=>{
     var order = new Order({
         products: req.body.products,
-        createdAt: moment(new Date().getTime()).format("h:mm a")
+        createdAt: moment().format("Do MMM YYYY ,h:mm a"),
+        user: req.userData.userId
     })
     order.save().then(order=>{
         res.status(201).send({order});
@@ -27,7 +28,7 @@ router.post('/',(req,res,next)=>{
         res.status(400).send(e);
     })
 })
-router.patch('/:id',(req,res,next)=>{
+router.patch('/:id',checkAuth,(req,res,next)=>{
     const id = req.params.id;
     var body = req.body;
     Order.findByIdAndUpdate(id,{$set:body},{new:true}).then(order=>{
@@ -39,7 +40,7 @@ router.patch('/:id',(req,res,next)=>{
         res.status(400).send(e);
     })
 })
-router.delete('/:id',(req,res,next)=>{
+router.delete('/:id',checkAuth,(req,res,next)=>{
    const id = req.params.id;
    Order.findByIdAndRemove(id).then(order=>{
        if(!order){

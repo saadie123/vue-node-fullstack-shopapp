@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const morgan = require('morgan');
 const app = express();
 
 mongoose.connect('mongodb://localhost/Store');
@@ -11,7 +12,8 @@ const orderRoutes = require('./routes/orders');
 const categoryRoutes = require('./routes/productCategories');
 
 app.use(bodyParser.json());
-
+app.use(morgan('dev'));
+// <-------------- Headers Middleware ------------>
 app.use((req,res,next)=>{
     res.header('Access-Control-Allow-Origin','*')
     res.header('Access-Control-Allow-Headers','*')
@@ -22,11 +24,14 @@ app.use((req,res,next)=>{
     }
    next() 
 })
+// <-------------- Headers Middleware ------------>
 
+// <---------------- Routes to handle API Requests -------------------->
 app.use('/users',userRoutes);
 app.use('/products',productRoutes);
 app.use('/orders',orderRoutes);
 app.use('/categories',categoryRoutes);
+// <---------------- Routes to handle API Requests -------------------->
 
 
 const port = process.env.PORT || 5050;

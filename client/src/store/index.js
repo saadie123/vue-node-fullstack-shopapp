@@ -9,7 +9,9 @@ const store = new Vuex.Store({
         categories:[],
         orders:[],
         userData:{},
-        error: 'hello',
+        token:'',
+        message:'',
+        error: '',
         loading: false
     },
     mutations:{
@@ -18,6 +20,12 @@ const store = new Vuex.Store({
         },
         setCategories(state,payload){
             state.categories = payload;
+        },
+        setUserData(state,payload){
+            state.userData = payload;
+        },
+        setToken(state,payload){
+            state.token = payload;
         }
     },
     actions:{
@@ -35,6 +43,30 @@ const store = new Vuex.Store({
                 var payload = response.data.categories;
                 commit('setCategories',payload);
             })
+        },
+        registerUser({commit},payload){
+            axios.post('http://localhost:5050/users/signup',payload)
+            .then(response=>{
+                console.log(response);
+                localStorage.setItem('token',response.data.token);
+                localStorage.setItem('userData',JSON.stringify(response.data.userData));
+                commit('setUserData',response.userData);
+                commit('setToken',response.data.token);
+            });
+        },
+        autoLoginUser({commit}){
+            var token = localStorage.getItem('token');
+            var userData = JSON.parse(localStorage.getItem('userData'));
+            if(token !== null && userData !== null)
+            {
+                console.log(userData);
+                commit('setToken',token);
+                commit('setUserData',userData);
+            }
+            else{
+                commit('setToken',null);
+                commit('setUserData',null);
+            }
         }
     },
     getters:{
@@ -51,6 +83,12 @@ const store = new Vuex.Store({
             return state.products.slice(0,6).sort((pA,pB)=>{
                 return pA.price > pB.price;
             });
+        },
+        getUserData(state){
+            return state.userData;
+        },
+        getToken(state){
+            return state.token;
         },
         getOrders(state){
             return state.orders;

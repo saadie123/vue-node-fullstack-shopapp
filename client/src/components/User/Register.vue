@@ -15,7 +15,7 @@
           @input="$v.phone.$touch()"
           @blur="$v.phone.$touch()"
           :error-messages="phoneErrors"
-          v-model='phone' 
+          v-model.trim='phone' 
           label="Phone" 
           ></v-text-field>
           <v-tooltip v-model="showToolTip" right>
@@ -33,7 +33,7 @@
           @input="$v.email.$touch()"
           @blur="$v.email.$touch()"
           :error-messages='emailErrors' 
-          v-model='email' 
+          v-model.trim='email' 
           type='email' 
           label="E-mail" 
           ></v-text-field>
@@ -51,7 +51,7 @@
           v-model='confirmPassword' 
           type='password' 
           label="Confirm Password" ></v-text-field>          
-          <v-btn :disabled='this.$v.$invalid' primary>Register</v-btn>
+          <v-btn @click="register" :disabled='this.$v.$invalid' primary>Register</v-btn>
           <v-btn @click="clear" error>clear</v-btn>
         </form>
       </v-flex>
@@ -132,6 +132,16 @@ import { required,minLength,email,sameAs,numeric } from 'vuelidate/lib/validator
         this.email = '';
         this.password = '';
         this.confirmPassword = '';
+      },
+      register(){
+        var payload = {
+          name:this.name,
+          phone: this.phone,
+          address: this.address,
+          email: this.email,
+          password: this.password
+        }
+        this.$store.dispatch('registerUser',payload);
       }
     }
   }

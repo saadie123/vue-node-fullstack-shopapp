@@ -15,6 +15,10 @@
     </v-toolbar-items>
     <v-spacer></v-spacer>
     <v-toolbar-items>
+       <v-btn flat>
+        <v-icon>lock_open</v-icon>
+        &nbsp; {{userData.name}}
+      </v-btn>
       <v-btn flat router to='/login'>
         <v-icon>lock_open</v-icon>
         &nbsp; Login
@@ -28,7 +32,7 @@
 </template>
 <script>
   export default {
-
+    props:['userData'],
   }
 
 </script>

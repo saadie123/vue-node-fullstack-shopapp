@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <navbar></navbar>
+    <navbar :userData='userData'></navbar>
     <router-view></router-view>
     <br>
     <v-footer class="pa-3 primary white--text">
@@ -22,8 +22,14 @@ export default {
     'navbar': Navbar
   },
   created(){
+    this.$store.dispatch('autoLoginUser');
     this.$store.dispatch('loadProducts');
     this.$store.dispatch('loadCategories');
+  },
+  computed:{
+    userData(){
+      return this.$store.getters.getUserData;
+    }
   }
 }
 </script>

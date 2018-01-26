@@ -6,30 +6,46 @@ Vue.use(Vuex);
 const store = new Vuex.Store({
     state:{
         products:[],
+        categories:[],
         orders:[],
         userData:{},
         error: 'hello',
         loading: false
     },
     mutations:{
-        setProducts(state, playload){
-            console.log(payload)
+        setProducts(state, payload){
             state.products = payload;
+        },
+        setCategories(state,payload){
+            state.categories = payload;
         }
     },
     actions:{
         loadProducts({commit}){
             axios.get('http://localhost:5050/products')
             .then((response)=>{
-                var products = response.data.products;
-                console.log(products);
-                commit('setProducts',products);
+                var payload = response.data.products;
+                commit('setProducts',payload);
             });
+        },
+        loadCategories({commit}){
+            axios.get('http://localhost:5050/categories')
+            .then((response)=>{
+                console.log(response);
+                var payload = response.data.categories;
+                commit('setCategories',payload);
+            })
         }
     },
     getters:{
+        getCategories(state){
+            return state.categories;
+        },
         getProducts(state){
             return state.products;
+        },
+        getHomeProducts(state){
+            return state.products.slice(0,4);
         },
         getFeaturedProducts:(state)=>{
             return state.products.slice(0,6).sort((pA,pB)=>{

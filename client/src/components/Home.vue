@@ -15,12 +15,13 @@
             <v-card-title primary-title>
               <div>
                 <h3 class="headline mb-0">{{product.name}}</h3>
+                <span class="grey--text">{{product.category.name}}</span>
               <h4>Price: ${{product.price}}</h4>
               </div>
             </v-card-title>
             <v-card-actions>
               <v-btn flat color="orange">Add to cart</v-btn>
-              <v-btn flat color="orange">Explore</v-btn>
+              <v-btn flat router :to="{name:'Product',params:{id:product._id}}" color="orange">Explore</v-btn>
             </v-card-actions>
           </v-card>
         </v-flex>
@@ -32,7 +33,7 @@
   export default {
     computed: {
       products() {
-        return this.$store.getters.getProducts
+        return this.$store.getters.getHomeProducts
       },
       featuredProducts() {
         return this.$store.getters.getFeaturedProducts

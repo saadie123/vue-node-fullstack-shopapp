@@ -48,7 +48,16 @@ router.post('/login',(req,res,next)=>{
                 var token = jwt.sign({userId:user._id,name:user.name,email:user.email,phone:user.phone,address:user.address},'iusecrazystring',{
                     expiresIn: '1h'
                 });
-                res.status(200).send({token,message:"You have successfuly logged in!"});
+                res.status(200).send({
+                    token,
+                    userData:{
+                        name: user.name,
+                        phone:user.phone,
+                        address:user.address,
+                        email: user.email,
+                    },
+                    message:"You have successfuly logged in!"
+                });
             }
             else{
                 res.status(404).send({message:"Email or password is incorrent!"})

@@ -5,7 +5,7 @@
     </v-toolbar-title>
     <v-toolbar-items>
       <v-btn flat router to='/products'>
-        <v-icon>shopping_cart</v-icon>
+        <v-icon>add_shopping_cart</v-icon>
         &nbsp; Products
       </v-btn>
       <v-btn flat router to='/orders'>
@@ -30,11 +30,11 @@
         &nbsp; Cart
       </v-btn>
       <v-btn flat>
-        <v-icon>lock_open</v-icon>
+        <v-icon>face</v-icon>
         &nbsp; {{userData.name}}
       </v-btn>
       <v-btn flat @click="logout">
-        <v-icon>lock_open</v-icon>
+        <v-icon>exit_to_app</v-icon>
         &nbsp; Logout
         </v-btn>
     </v-toolbar-items>

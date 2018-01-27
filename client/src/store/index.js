@@ -29,37 +29,54 @@ const store = new Vuex.Store({
         }
     },
     actions:{
-        loadProducts({commit}){
-            axios.get('http://localhost:5050/products')
-            .then((response)=>{
-                var payload = response.data.products;
-                commit('setProducts',payload);
-            });
+      async loadProducts({commit}){
+          try{
+            const response = await axios.get('http://localhost:5050/products');
+            var payload = response.data.products;
+            commit('setProducts',payload);   
+          }catch(e){
+              console.log(e);
+          }
+           
         },
-        loadCategories({commit}){
-            axios.get('http://localhost:5050/categories')
-            .then((response)=>{
-                console.log(response);
-                var payload = response.data.categories;
-                commit('setCategories',payload);
-            })
+       async loadCategories({commit}){
+          try{
+            const response = await axios.get('http://localhost:5050/categories')
+            console.log(response);
+            var payload = response.data.categories;
+            commit('setCategories',payload);
+          } catch(e){
+              console.log(e);
+          }
         },
-        registerUser({commit},payload){
-            axios.post('http://localhost:5050/users/signup',payload)
-            .then(response=>{
-                console.log(response);
-                localStorage.setItem('token',response.data.token);
-                localStorage.setItem('userData',JSON.stringify(response.data.userData));
-                commit('setUserData',response.data.userData);
-                commit('setToken',response.data.token);
-            });
+       async registerUser({commit},payload){
+           try{
+            const response = await axios.post('http://localhost:5050/users/signup',payload)
+            console.log(response);
+            localStorage.setItem('token',response.data.token);
+            localStorage.setItem('userData',JSON.stringify(response.data.userData));
+            commit('setUserData',response.data.userData);
+            commit('setToken',response.data.token);  
+           } catch(e){
+               console.log(e);
+           }
+        },
+       async loginUser({commit},payload){
+           try{
+            const response = await axios.post('http://localhost:5050/users/login',payload)
+            localStorage.setItem('token',response.data.token);
+            localStorage.setItem('userData',JSON.stringify(response.data.userData));
+            commit('setUserData',response.data.userData);
+            commit('setToken',response.data.token);
+           }catch(e){
+               console.log(e);
+           }       
         },
         autoLoginUser({commit}){
             var token = localStorage.getItem('token');
             var userData = JSON.parse(localStorage.getItem('userData'));
             if(token !== '' && userData !== '')
             {
-                console.log(userData);
                 commit('setToken',token);
                 commit('setUserData',userData);
             }
@@ -69,8 +86,8 @@ const store = new Vuex.Store({
             }
         },
         logoutUser({commit}){
-            localStorage.setItem('token',null);
-            localStorage.setItem('userData',null);
+            localStorage.removeItem('token');
+            localStorage.removeItem('userData');
             commit('setToken',null);
             commit('setUserData',null);
         }
@@ -103,7 +120,7 @@ const store = new Vuex.Store({
             return state.error;
         },
         getLoading(state){
-            return state.error;
+            return state.loading;
         }
     }
 })

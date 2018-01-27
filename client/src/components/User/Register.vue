@@ -2,7 +2,7 @@
   <v-container>
     <v-layout row>
       <v-flex xs6 offset-xs3>
-        <h1 class='mb-3'>Register your account</h1>
+        <h1 class='mb-3'>Register</h1>
         <form>
           <v-text-field 
           @input="$v.name.$touch()"
@@ -142,6 +142,10 @@ import { required,minLength,email,sameAs,numeric } from 'vuelidate/lib/validator
           password: this.password
         }
         this.$store.dispatch('registerUser',payload);
+        if(this.$store.state.userData)
+        {
+          this.$router.push('/');
+        }
       }
     }
   }

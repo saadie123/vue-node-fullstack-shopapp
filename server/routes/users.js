@@ -22,7 +22,16 @@ router.post('/signup',(req,res,next)=>{
             var token = jwt.sign({userId:user._id,name:user.name,email:user.email,phone:user.phone,address:user.address},'iusecrazystring',{
                 expiresIn: '1h'
             });
-            res.status(201).send({token,message:"Registered Successfuly. You are now logged in!"});
+            res.status(201).send({
+                token,
+                userData:{
+                    name: user.name,
+                    phone:user.phone,
+                    address:user.address,
+                    email: user.email,
+                },
+                message:"Registered Successfuly. You are now logged in!"
+            });
         }).catch(e=>{
             res.status(400).send(e);
         });

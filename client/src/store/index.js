@@ -8,7 +8,7 @@ const store = new Vuex.Store({
         products:[],
         categories:[],
         orders:[],
-        userData:{},
+        userData:null,
         token:'',
         message:'',
         error: '',
@@ -50,14 +50,14 @@ const store = new Vuex.Store({
                 console.log(response);
                 localStorage.setItem('token',response.data.token);
                 localStorage.setItem('userData',JSON.stringify(response.data.userData));
-                commit('setUserData',response.userData);
+                commit('setUserData',response.data.userData);
                 commit('setToken',response.data.token);
             });
         },
         autoLoginUser({commit}){
             var token = localStorage.getItem('token');
             var userData = JSON.parse(localStorage.getItem('userData'));
-            if(token !== null && userData !== null)
+            if(token !== '' && userData !== '')
             {
                 console.log(userData);
                 commit('setToken',token);
@@ -67,6 +67,12 @@ const store = new Vuex.Store({
                 commit('setToken',null);
                 commit('setUserData',null);
             }
+        },
+        logoutUser({commit}){
+            localStorage.setItem('token',null);
+            localStorage.setItem('userData',null);
+            commit('setToken',null);
+            commit('setUserData',null);
         }
     },
     getters:{

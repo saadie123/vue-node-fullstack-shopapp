@@ -14,11 +14,7 @@
       </v-btn>
     </v-toolbar-items>
     <v-spacer></v-spacer>
-    <v-toolbar-items>
-       <v-btn flat>
-        <v-icon>lock_open</v-icon>
-        &nbsp; {{userData.name}}
-      </v-btn>
+    <v-toolbar-items v-if='!userData'>
       <v-btn flat router to='/login'>
         <v-icon>lock_open</v-icon>
         &nbsp; Login
@@ -28,11 +24,31 @@
         &nbsp; Register
       </v-btn>
     </v-toolbar-items>
+    <v-toolbar-items v-else>
+      <v-btn flat>
+        <v-icon>shopping_cart</v-icon>
+        &nbsp; Cart
+      </v-btn>
+      <v-btn flat>
+        <v-icon>lock_open</v-icon>
+        &nbsp; {{userData.name}}
+      </v-btn>
+      <v-btn flat @click="logout">
+        <v-icon>lock_open</v-icon>
+        &nbsp; Logout
+        </v-btn>
+    </v-toolbar-items>
   </v-toolbar>
 </template>
 <script>
   export default {
     props:['userData'],
+    methods:{
+      logout(){
+        this.$store.dispatch('logoutUser');
+        this.$router.push('/');
+      }
+    }
   }
 
 </script>

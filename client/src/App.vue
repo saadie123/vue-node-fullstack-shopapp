@@ -1,6 +1,16 @@
 <template>
   <v-app>
     <navbar :userData='userData'></navbar>
+    <v-snackbar
+      :timeout="5000"
+      top
+      right
+      v-model="showMessage"
+      v-if="message !== ''"
+    >
+    {{ message }}
+    <v-btn flat color='accent' @click="showMessage=false">Close</v-btn>
+    </v-snackbar>
     <router-view></router-view>
     <br>
     <v-footer class="pa-3 primary white--text">
@@ -16,6 +26,7 @@ import Navbar from './components/Navbar.vue';
 export default {
   data() {
     return {
+      showMessage:false,
     }
   },
   components:{
@@ -29,6 +40,10 @@ export default {
   computed:{
     userData(){
       return this.$store.getters.getUserData;
+    },
+    message(){
+        this.showMessage = true;
+        return this.$store.getters.getMessage;
     }
   }
 }

@@ -26,6 +26,9 @@ const store = new Vuex.Store({
         },
         setToken(state,payload){
             state.token = payload;
+        },
+        setMessage(state,payload){
+            state.message = payload;
         }
     },
     actions:{
@@ -56,7 +59,8 @@ const store = new Vuex.Store({
             localStorage.setItem('token',response.data.token);
             localStorage.setItem('userData',JSON.stringify(response.data.userData));
             commit('setUserData',response.data.userData);
-            commit('setToken',response.data.token);  
+            commit('setToken',response.data.token);
+            commit('setMessage',response.data.message);            
            } catch(e){
                console.log(e);
            }
@@ -64,10 +68,12 @@ const store = new Vuex.Store({
        async loginUser({commit},payload){
            try{
             const response = await axios.post('http://localhost:5050/users/login',payload)
+            console.log(response);
             localStorage.setItem('token',response.data.token);
             localStorage.setItem('userData',JSON.stringify(response.data.userData));
             commit('setUserData',response.data.userData);
             commit('setToken',response.data.token);
+            commit('setMessage',response.data.message);
            }catch(e){
                console.log(e);
            }       
@@ -75,10 +81,20 @@ const store = new Vuex.Store({
         autoLoginUser({commit}){
             var token = localStorage.getItem('token');
             var userData = JSON.parse(localStorage.getItem('userData'));
-            if(token !== '' && userData !== '')
+            if(token !== null && userData !== null)
             {
-                commit('setToken',token);
-                commit('setUserData',userData);
+                var session = ((new Date().getTime() - userData.loggedInAt) / 1000) / 60
+                if(session >= 60){
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('userData');
+                    commit('setToken',null);
+                    commit('setUserData',null);
+                }
+                else{
+                    commit('setToken',token);
+                    commit('setUserData',userData);
+                    commit('setMessage','You are already logged in!')
+                }
             }
             else{
                 commit('setToken',null);
@@ -90,6 +106,7 @@ const store = new Vuex.Store({
             localStorage.removeItem('userData');
             commit('setToken',null);
             commit('setUserData',null);
+            commit('setMessage','You have logged out!');
         }
     },
     getters:{
@@ -115,6 +132,9 @@ const store = new Vuex.Store({
         },
         getOrders(state){
             return state.orders;
+        },
+        getMessage(state){
+            return state.message;
         },
         getError(state){
             return state.error;

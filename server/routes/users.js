@@ -29,6 +29,7 @@ router.post('/signup',(req,res,next)=>{
                     phone:user.phone,
                     address:user.address,
                     email: user.email,
+                    loggedInAt: new Date().getTime()
                 },
                 message:"Registered Successfuly. You are now logged in!"
             });
@@ -55,6 +56,7 @@ router.post('/login',(req,res,next)=>{
                         phone:user.phone,
                         address:user.address,
                         email: user.email,
+                        loggedInAt: new Date().getTime()
                     },
                     message:"You have successfuly logged in!"
                 });

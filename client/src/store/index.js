@@ -11,7 +11,7 @@ const store = new Vuex.Store({
         userData:null,
         token:'',
         message:'',
-        error: '',
+        error: null,
         loading: false
     },
     mutations:{
@@ -29,6 +29,12 @@ const store = new Vuex.Store({
         },
         setMessage(state,payload){
             state.message = payload;
+        },
+        setError(state,payload){
+            state.error = payload;
+        },
+        setLoading(state,payload){
+            state.loading = payload;
         }
     },
     actions:{
@@ -54,28 +60,38 @@ const store = new Vuex.Store({
         },
        async registerUser({commit},payload){
            try{
-            const response = await axios.post('http://localhost:5050/users/signup',payload)
-            console.log(response);
-            localStorage.setItem('token',response.data.token);
-            localStorage.setItem('userData',JSON.stringify(response.data.userData));
-            commit('setUserData',response.data.userData);
-            commit('setToken',response.data.token);
-            commit('setMessage',response.data.message);            
-           } catch(e){
-               console.log(e);
-           }
-        },
-       async loginUser({commit},payload){
-           try{
-            const response = await axios.post('http://localhost:5050/users/login',payload)
-            console.log(response);
+            commit('setLoading',true);               
+            const response = await axios.post('http://localhost:5050/users/signup',payload);
+            commit('setLoading',false);
             localStorage.setItem('token',response.data.token);
             localStorage.setItem('userData',JSON.stringify(response.data.userData));
             commit('setUserData',response.data.userData);
             commit('setToken',response.data.token);
             commit('setMessage',response.data.message);
+            commit('setError',null);                     
+           } catch(e){
+            commit('setLoading',false);
+            localStorage.removeItem('token');
+            localStorage.removeItem('userData');
+            commit('setError',e.response.data.error);
+           }
+        },
+       async loginUser({commit},payload){
+           try{
+            commit('setLoading',true);   
+            const response = await axios.post('http://localhost:5050/users/login',payload);
+            commit('setLoading',false);             
+            localStorage.setItem('token',response.data.token);
+            localStorage.setItem('userData',JSON.stringify(response.data.userData));
+            commit('setUserData',response.data.userData);
+            commit('setToken',response.data.token);
+            commit('setMessage',response.data.message);
+            commit('setError',null);
            }catch(e){
-               console.log(e);
+               commit('setLoading',false);                            
+               localStorage.removeItem('token');
+               localStorage.removeItem('userData');
+               commit('setError',e.response.data.error);
            }       
         },
         autoLoginUser({commit}){

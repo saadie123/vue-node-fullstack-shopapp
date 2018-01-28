@@ -2,26 +2,42 @@
   <v-container>
     <v-layout row>
       <v-flex xs6 offset-xs3>
-        <h1 class="mb-3">Login</h1>
-        <form>
-          <v-text-field
-          @input="$v.email.$touch()"
-          @blur="$v.email.$touch()"
-          :error-messages='emailErrors' 
-          v-model.trim='email' 
-          type='email' 
-          label="E-mail" 
-          ></v-text-field>
-          <v-text-field
-          @input="$v.password.$touch()"
-          @blur="$v.password.$touch()"
-          :error-messages='passwordErrors'
-          v-model='password'
-          type='password' 
-          label="Password" ></v-text-field>
-
-        <v-btn @click="login" :disabled='this.$v.$invalid' primary>Login</v-btn>
-        </form>
+        <v-card>
+          <v-container>
+              <h1 class="mb-3 primary--text">Login</h1>
+            <v-alert color="error" icon="info" v-if="error" v-model="alert">
+              {{error}}
+            </v-alert>
+            <form>
+              <v-text-field
+              @input="$v.email.$touch()"
+              @blur="$v.email.$touch()"
+              :error-messages='emailErrors' 
+              v-model.trim='email' 
+              type='email' 
+              label="E-mail" 
+              ></v-text-field>
+              <v-text-field
+              @input="$v.password.$touch()"
+              @blur="$v.password.$touch()"
+              :error-messages='passwordErrors'
+              v-model='password'
+              type='password' 
+              label="Password" ></v-text-field>
+              <v-btn
+                primary
+                :loading="loading"
+                :disabled="loading || this.$v.$invalid"
+                @click="login"
+              >
+                Login
+                <span slot="loader" class="loader">
+                  <v-icon dark>cached</v-icon>
+                </span>
+              </v-btn>
+            </form>
+          </v-container>
+        </v-card>
       </v-flex>
     </v-layout>
   </v-container>
@@ -32,7 +48,8 @@ export default {
   data(){
     return{
       email:'',
-      password:''
+      password:'',
+      alert: true
     }
   },
   validations:{
@@ -53,6 +70,23 @@ export default {
         !this.$v.password.required && errors.push('Password is required!')
         !this.$v.password.minlength && errors.push('Password is must be at least 6 characters long!')
         return errors
+      },
+      loading(){
+        return this.$store.getters.getLoading;
+      },
+      error(){
+        return this.$store.getters.getError;
+      },
+      user(){
+        return this.$store.getters.getUserData;
+      }
+  },
+  watch:{
+      error(value){
+        if(value == null || value == undefined)
+        {
+          this.$router.push('/');
+        }
       }
   },
   methods:{
@@ -62,9 +96,48 @@ export default {
         password:this.password
       };
       this.$store.dispatch('loginUser',payload);
-      this.$router.push('/');
+      if(this.user != null || this.user != undefined){
+          this.$router.push('/');   
+      }
     }
   }
 }
 </script>
-
+<style scoped>
+  .loader {
+    animation: loader 1s infinite;
+    display: flex;
+  }
+  @-moz-keyframes loader {
+    from {
+      transform: rotate(0);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @-webkit-keyframes loader {
+    from {
+      transform: rotate(0);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @-o-keyframes loader {
+    from {
+      transform: rotate(0);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @keyframes loader {
+    from {
+      transform: rotate(0);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+</style>

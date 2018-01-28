@@ -42,7 +42,7 @@ router.post('/signup',(req,res,next)=>{
 router.post('/login',(req,res,next)=>{
     User.findOne({email:req.body.email}).then(user=>{
         if(!user){
-            return res.status(404).send({message:"Email or password is incorrect!"});
+            return res.status(404).send({error:"Email or password is incorrent!"});
         };
         bcrypt.compare(req.body.password,user.password,(err,result)=>{
             if(result){
@@ -62,7 +62,7 @@ router.post('/login',(req,res,next)=>{
                 });
             }
             else{
-                res.status(404).send({message:"Email or password is incorrent!"})
+                res.status(404).send({error:"Email or password is incorrent!"});
             }
         });
     });

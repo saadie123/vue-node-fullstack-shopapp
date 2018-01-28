@@ -12,7 +12,7 @@
               <v-text-field
               @input="$v.email.$touch()"
               @blur="$v.email.$touch()"
-              :error-messages='emailErrors' 
+              :error-messages='emailErrors'
               v-model.trim='email' 
               type='email' 
               label="E-mail" 
@@ -82,8 +82,8 @@ export default {
       }
   },
   watch:{
-      error(value){
-        if(value == null || value == undefined)
+      user(value){
+        if(value !== null || value !== undefined)
         {
           this.$router.push('/');
         }
@@ -96,9 +96,6 @@ export default {
         password:this.password
       };
       this.$store.dispatch('loginUser',payload);
-      if(this.user != null || this.user != undefined){
-          this.$router.push('/');   
-      }
     }
   }
 }

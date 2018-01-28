@@ -59,8 +59,8 @@ const store = new Vuex.Store({
           }
         },
        async registerUser({commit},payload){
+           commit('setLoading',true);               
            try{
-            commit('setLoading',true);               
             const response = await axios.post('http://localhost:5050/users/signup',payload);
             commit('setLoading',false);
             localStorage.setItem('token',response.data.token);
@@ -77,8 +77,8 @@ const store = new Vuex.Store({
            }
         },
        async loginUser({commit},payload){
+           commit('setLoading',true);   
            try{
-            commit('setLoading',true);   
             const response = await axios.post('http://localhost:5050/users/login',payload);
             commit('setLoading',false);             
             localStorage.setItem('token',response.data.token);

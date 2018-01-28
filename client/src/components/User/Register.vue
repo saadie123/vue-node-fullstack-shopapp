@@ -2,58 +2,75 @@
   <v-container>
     <v-layout row>
       <v-flex xs6 offset-xs3>
-        <h1 class='mb-3'>Register</h1>
-        <form>
-          <v-text-field 
-          @input="$v.name.$touch()"
-          @blur="$v.name.$touch()"
-          :error-messages="nameErrors"
-           v-model='name'
-            label="Name" 
-            ></v-text-field>
-          <v-text-field
-          @input="$v.phone.$touch()"
-          @blur="$v.phone.$touch()"
-          :error-messages="phoneErrors"
-          v-model.trim='phone' 
-          label="Phone" 
-          ></v-text-field>
-          <v-tooltip v-model="showToolTip" right>
-          <v-text-field
-          @focus="showToolTip=true"
-          @blur="showToolTip=false; $v.address.$touch()"
-          @input="$v.address.$touch()"
-          :error-messages="addressErrors"
-          slot="activator"
-           v-model='address' 
-           label="Address" ></v-text-field>
-            <span>This address will be used to ship your items!</span>
-          </v-tooltip>
-          <v-text-field
-          @input="$v.email.$touch()"
-          @blur="$v.email.$touch()"
-          :error-messages='emailErrors' 
-          v-model.trim='email' 
-          type='email' 
-          label="E-mail" 
-          ></v-text-field>
-          <v-text-field
-          @input="$v.password.$touch()"
-          @blur="$v.password.$touch()"
-          :error-messages='passwordErrors'
-          v-model='password'
-          type='password' 
-          label="Password" ></v-text-field>          
-          <v-text-field 
-          @input="$v.confirmPassword.$touch()"
-          @blur="$v.confirmPassword.$touch()"
-          :error-messages='confirmPasswordErrors'
-          v-model='confirmPassword' 
-          type='password' 
-          label="Confirm Password" ></v-text-field>          
-          <v-btn @click="register" :disabled='this.$v.$invalid' primary>Register</v-btn>
-          <v-btn @click="clear" error>clear</v-btn>
-        </form>
+        <v-card>
+          <v-container>
+            <h1 class='mb-3 primary--text'>Register</h1>
+            <v-alert color="error" icon="info" v-if="error" v-model="alert">
+              {{error}}
+            </v-alert>
+            <form>
+              <v-text-field 
+              @input="$v.name.$touch()"
+              @blur="$v.name.$touch()"
+              :error-messages="nameErrors"
+              v-model='name'
+                label="Name" 
+                ></v-text-field>
+              <v-text-field
+              @input="$v.phone.$touch()"
+              @blur="$v.phone.$touch()"
+              :error-messages="phoneErrors"
+              v-model.trim='phone' 
+              label="Phone" 
+              ></v-text-field>
+              <v-tooltip v-model="showToolTip" right>
+              <v-text-field
+              @focus="showToolTip=true"
+              @blur="showToolTip=false; $v.address.$touch()"
+              @input="$v.address.$touch()"
+              :error-messages="addressErrors"
+              slot="activator"
+              v-model='address' 
+              label="Address" ></v-text-field>
+                <span>This address will be used to ship your items!</span>
+              </v-tooltip>
+              <v-text-field
+              @input="$v.email.$touch()"
+              @blur="$v.email.$touch()"
+              :error-messages='emailErrors' 
+              v-model.trim='email' 
+              type='email' 
+              label="E-mail" 
+              ></v-text-field>
+              <v-text-field
+              @input="$v.password.$touch()"
+              @blur="$v.password.$touch()"
+              :error-messages='passwordErrors'
+              v-model='password'
+              type='password' 
+              label="Password" ></v-text-field>          
+              <v-text-field 
+              @input="$v.confirmPassword.$touch()"
+              @blur="$v.confirmPassword.$touch()"
+              :error-messages='confirmPasswordErrors'
+              v-model='confirmPassword' 
+              type='password' 
+              label="Confirm Password" ></v-text-field>
+              <v-btn
+                primary
+                :loading="loading"
+                :disabled="loading || this.$v.$invalid"
+                @click="register"
+              >
+                Register
+                <span slot="loader" class="loader">
+                  <v-icon dark>cached</v-icon>
+                </span>
+              </v-btn>     
+              <v-btn @click="clear" error>clear</v-btn>
+            </form>
+          </v-container>
+        </v-card>
       </v-flex>
     </v-layout>
   </v-container>
@@ -69,7 +86,8 @@ import { required,minLength,email,sameAs,numeric } from 'vuelidate/lib/validator
         email:'',
         password:'',
         confirmPassword:'',
-        showToolTip:false
+        showToolTip:false,
+        alert: true
       }
     },
     validations:{
@@ -121,6 +139,22 @@ import { required,minLength,email,sameAs,numeric } from 'vuelidate/lib/validator
         !this.$v.confirmPassword.required && errors.push('Please confirm your password!')
         !this.$v.confirmPassword.match && errors.push('Passwords do not match!')
         return errors
+      },
+      error(){
+        return this.$store.getters.getError;
+      },
+      loading(){
+        return this.$store.getters.getLoading;
+      },
+      user(){
+        return this.$store.getters.getUserData;
+      }
+    },
+    watch:{
+      user(value){
+        if(value !==null || value !==undefined){
+          this.$router.push('/');
+        }
       }
     },
     methods:{
@@ -149,5 +183,42 @@ import { required,minLength,email,sameAs,numeric } from 'vuelidate/lib/validator
       }
     }
   }
-
 </script>
+<style>
+  .loader {
+    animation: loader 1s infinite;
+    display: flex;
+  }
+  @-moz-keyframes loader {
+    from {
+      transform: rotate(0);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @-webkit-keyframes loader {
+    from {
+      transform: rotate(0);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @-o-keyframes loader {
+    from {
+      transform: rotate(0);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @keyframes loader {
+    from {
+      transform: rotate(0);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+</style>

@@ -20,7 +20,7 @@
               @input="$v.phone.$touch()"
               @blur="$v.phone.$touch()"
               :error-messages="phoneErrors"
-              v-model.trim='phone' 
+              v-model.trim='phone'
               label="Phone" 
               ></v-text-field>
               <v-tooltip v-model="showToolTip" right>

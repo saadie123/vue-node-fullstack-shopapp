@@ -8,7 +8,7 @@
         <v-icon>add_shopping_cart</v-icon>
         &nbsp; Products
       </v-btn>
-      <v-btn flat router to='/orders' v-if="userData">
+    <v-btn flat router to='/orders' v-if="userData">
         <v-icon>attach_money</v-icon>
         &nbsp; Orders
       </v-btn>
@@ -25,10 +25,52 @@
       </v-btn>
     </v-toolbar-items>
     <v-toolbar-items v-else>
-      <v-btn flat>
-        <v-icon>shopping_cart</v-icon>
+      <v-menu
+      offset-y
+      left
+      :close-on-content-click="false"
+      :nudge-width="400"
+      v-model="menu"
+      >
+      <v-btn flat slot="activator">
+        <v-badge color='accent' left>
+          <span slot="badge">{{ totalItems }}</span>
+          <v-icon>shopping_cart</v-icon>
+        </v-badge>
         &nbsp; Cart
       </v-btn>
+      <v-card>
+        <v-card-title primary-title>
+          <h2>Your Cart</h2>
+        </v-card-title>
+        <v-divider></v-divider>
+        <v-data-table
+            v-bind:headers="headers"
+            :items="cart"
+            hide-actions
+            class="elevation-1"
+          >
+          <template slot="items" slot-scope="props">
+            <td>{{ props.item.name }}</td>
+            <td class="text-xs-right">{{ props.item.price | currency }}</td>
+            <td class="text-xs-right">{{ props.item.quantity}}</td>
+            <td>
+              <v-btn @click="addToCart(props.item)" flat icon color="success">
+                <v-icon>add</v-icon>
+              </v-btn>
+              <v-btn @click="removeFromCart(props.item)" flat icon color="error">
+                <v-icon>clear</v-icon>
+              </v-btn>
+            </td>
+          </template>
+        </v-data-table>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn flat primary @click="menu = false">checkout</v-btn>
+          <v-btn flat error @click="clearCart">Clear cart</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-menu>
       <v-btn flat>
         <v-icon>face</v-icon>
         &nbsp; {{userData.name}}
@@ -43,10 +85,37 @@
 <script>
   export default {
     props:['userData'],
+    data(){
+      return{
+        menu: false,
+        headers: [
+          { text: 'Product', sortable: false, value: 'name', align:'center' },
+          { text: 'Price', value: 'price' },
+          { text: 'Quantity', value: 'quantity' }
+        ],
+      }
+    },
+    computed:{
+      cart(){
+        return this.$store.getters.getCart;
+      },
+      totalItems(){
+        return this.$store.getters.getTotalItems;
+      }
+    },
     methods:{
       logout(){
         this.$store.dispatch('logoutUser');
         this.$router.push('/');
+      },
+      removeFromCart(item){
+        this.$store.dispatch('removeFromCart',item);
+      },
+      clearCart(){
+        this.$store.dispatch('clearCart');
+      },
+      addToCart(product){
+        this.$store.dispatch('addToCart',product);
       }
     }
   }

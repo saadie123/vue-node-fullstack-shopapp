@@ -8,6 +8,8 @@ const store = new Vuex.Store({
         products:[],
         categories:[],
         orders:[],
+        cart:[],
+        totalItems:0,
         userData:null,
         token:'',
         message:'',
@@ -23,6 +25,12 @@ const store = new Vuex.Store({
         },
         setUserData(state,payload){
             state.userData = payload;
+        },
+        setCart(state,payload){
+            state.cart.push(payload);
+        },
+        setOrders(state,payload){
+            state.orders.push(payload);
         },
         setToken(state,payload){
             state.token = payload;
@@ -94,35 +102,80 @@ const store = new Vuex.Store({
                commit('setError',e.response.data.error);
            }       
         },
-        autoLoginUser({commit}){
+        autoLoginUser({commit,state}){
             var token = localStorage.getItem('token');
             var userData = JSON.parse(localStorage.getItem('userData'));
+            var userCart = JSON.parse(localStorage.getItem('userCart'));
             if(token !== null && userData !== null)
             {
                 var session = ((new Date().getTime() - userData.loggedInAt) / 1000) / 60
                 if(session >= 60){
                     localStorage.removeItem('token');
                     localStorage.removeItem('userData');
+                    localStorage.removeItem('userCart');
                     commit('setToken',null);
                     commit('setUserData',null);
+                    state.cart = [];
+                    state.totalItems = 0;
                 }
                 else{
                     commit('setToken',token);
                     commit('setUserData',userData);
-                    commit('setMessage','You are already logged in!')
+                    state.cart = userCart;
+                    state.totalItems = state.cart.reduce((total,item)=>{
+                        return total+item.quantity;
+                    },0)
+                    commit('setMessage','You are already logged in!');
                 }
             }
             else{
                 commit('setToken',null);
                 commit('setUserData',null);
+                state.cart = [];
+                state.totalItems = 0;                
             }
         },
-        logoutUser({commit}){
+        logoutUser({commit,state}){
             localStorage.removeItem('token');
             localStorage.removeItem('userData');
+            localStorage.removeItem('userCart');            
             commit('setToken',null);
             commit('setUserData',null);
+            state.cart = [];
+            state.totalItems = 0;            
             commit('setMessage','You have logged out!');
+        },
+        addToCart({commit, state},payload){
+           var product = state.cart.find(item=>{
+                return item._id === payload._id;
+            })
+            if(!product){
+                payload.quantity = 1;
+                state.totalItems++;                
+                commit('setCart',payload);
+                localStorage.setItem('userCart',JSON.stringify(state.cart));                
+            } else{
+                var index = state.cart.indexOf(product);
+                state.cart[index].quantity++;
+                state.totalItems++;
+                localStorage.setItem('userCart',JSON.stringify(state.cart));    
+            }
+        },
+        removeFromCart({state},payload){
+            var index = state.cart.indexOf(payload);
+            payload.quantity--;
+            state.totalItems--;            
+            if(payload.quantity === 0){
+                state.cart.splice(index,1);
+            } else{
+                state.cart[index] = payload;
+                localStorage.setItem('userCart',JSON.stringify(state.cart));
+            }                                                
+        },
+        clearCart({state}){
+            state.cart = [];
+            state.totalItems = 0;
+            localStorage.removeItem('userCart');
         }
     },
     getters:{
@@ -143,11 +196,17 @@ const store = new Vuex.Store({
         getUserData(state){
             return state.userData;
         },
-        getToken(state){
-            return state.token;
-        },
         getOrders(state){
             return state.orders;
+        },
+        getCart(state){
+            return state.cart;
+        },
+        getTotalItems(state){
+            return state.totalItems;
+        },
+        getToken(state){
+            return state.token;
         },
         getMessage(state){
             return state.message;

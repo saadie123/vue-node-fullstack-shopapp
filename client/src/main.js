@@ -8,6 +8,9 @@ import store from './store/index'
 import Vuetify from 'vuetify'
 import 'vuetify/dist/vuetify.min.css'
 
+import currency from './filter/currency'
+
+Vue.filter('currency',currency);
 Vue.use(Vuelidate)
 Vue.use(Vuetify, { theme: {
   primary: '#4caf50',

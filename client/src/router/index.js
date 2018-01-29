@@ -7,7 +7,7 @@ import Product from '../components/Products/Product/Product.vue';
 import Orders from '../components/Orders/Orders.vue';
 import Login from '../components/User/Login.vue';
 import Register from '../components/User/Register.vue';
-import authGuard from '../guards/auth-guard';
+import authGuard from '../guard/auth-guard';
 
 Vue.use(Router);
 

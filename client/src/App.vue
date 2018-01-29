@@ -27,6 +27,7 @@ export default {
   data() {
     return {
       showMessage:false,
+      items:0
     }
   },
   components:{
@@ -44,7 +45,7 @@ export default {
     message(){
         this.showMessage = true;
         return this.$store.getters.getMessage;
-    }
+    },
   }
 }
 </script>

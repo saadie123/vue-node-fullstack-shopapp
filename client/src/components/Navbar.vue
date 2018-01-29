@@ -8,7 +8,7 @@
         <v-icon>add_shopping_cart</v-icon>
         &nbsp; Products
       </v-btn>
-      <v-btn flat router to='/orders'>
+      <v-btn flat router to='/orders' v-if="userData">
         <v-icon>attach_money</v-icon>
         &nbsp; Orders
       </v-btn>

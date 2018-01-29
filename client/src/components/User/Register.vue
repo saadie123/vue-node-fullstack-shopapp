@@ -157,6 +157,11 @@ import { required,minLength,email,sameAs,numeric } from 'vuelidate/lib/validator
         }
       }
     },
+    created(){
+      if(this.user !== null){
+        this.$router.push('/');
+      }
+    },
     methods:{
       clear(){
         this.$v.$reset();

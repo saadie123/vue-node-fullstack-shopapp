@@ -8,7 +8,7 @@
             <v-alert color="error" icon="info" v-if="error" v-model="alert">
               {{error}}
             </v-alert>
-            <form>
+            <form @submit.prevent="login">
               <v-text-field
               @input="$v.email.$touch()"
               @blur="$v.email.$touch()"
@@ -28,7 +28,7 @@
                 primary
                 :loading="loading"
                 :disabled="loading || this.$v.$invalid"
-                @click="login"
+                type='submit'
               >
                 Login
                 <span slot="loader" class="loader">
@@ -83,7 +83,7 @@ export default {
   },
   watch:{
       user(value){
-        if(value !== null || value !== undefined)
+        if(value !== null && value !== undefined)
         {
           this.$router.push('/');
         }
@@ -96,6 +96,11 @@ export default {
         password:this.password
       };
       this.$store.dispatch('loginUser',payload);
+    }
+  },
+  created(){
+    if(this.user !== null){
+      this.$router.push('/');
     }
   }
 }

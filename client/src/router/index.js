@@ -7,6 +7,8 @@ import Product from '../components/Products/Product/Product.vue';
 import Orders from '../components/Orders/Orders.vue';
 import Login from '../components/User/Login.vue';
 import Register from '../components/User/Register.vue';
+import authGuard from '../guards/auth-guard';
+
 Vue.use(Router);
 
 export default new Router({
@@ -29,7 +31,8 @@ export default new Router({
     {
       path: '/orders',
       component: Orders,
-      name: 'Orders'
+      name: 'Orders',
+      beforeEnter: authGuard
     },
     {
       path: '/login',
@@ -40,6 +43,10 @@ export default new Router({
       path: '/register',
       component: Register,
       name: 'Register'
+    },
+    {
+      path: '/*',
+      redirect: '/'
     }
   ],
   mode:'history'

@@ -99,6 +99,7 @@ export default {
     }
   },
   created(){
+    this.$store.commit('setError',null);
     if(this.user !== null){
       this.$router.push('/');
     }

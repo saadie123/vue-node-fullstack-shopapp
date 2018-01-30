@@ -32,7 +32,7 @@ const store = new Vuex.Store({
             state.cart.push(payload);
         },
         setOrders(state,payload){
-            state.orders.push(payload);
+            state.orders = payload;
         },
         setToken(state,payload){
             state.token = payload;
@@ -54,7 +54,7 @@ const store = new Vuex.Store({
               const response = await axios.get('/products');
               commit('setLoading',false);            
               var payload = response.data.products;
-              commit('setProducts',payload);   
+              commit('setProducts',payload);
           }catch(e){
               commit('setLoading',false);              
               console.log(e);
@@ -66,13 +66,24 @@ const store = new Vuex.Store({
            try{
                const response = await axios.get('/categories');
                commit('setLoading',false);              
-               console.log(response);
                var payload = response.data.categories;
                commit('setCategories',payload);
             } catch(e){
                commit('setLoading',false);   
                console.log(e);
             }
+        },
+        async loadOrders({commit,state}){
+           try{
+            commit('setLoading',true);
+            const response = await axios.get('/orders');
+            commit('setLoading',false);           
+            var payload = response.data.orders;
+            commit('setOrders',payload);
+            console.log(state.orders);
+           } catch(e){
+            console.log(e);
+           }         
         },
        async registerUser({commit},payload){
            commit('setLoading',true);               
@@ -193,14 +204,17 @@ const store = new Vuex.Store({
             state.totalItems = 0;
             localStorage.removeItem('userCart');
         },
-       async submitOrder({commit,state},payload){
-           commit('setLoading',true);
-            var order = {
-                products:payload
-            }
-            var response = await axios.post('/orders',order);
-           commit('setLoading',false);            
-            console.log(response);
+       async submitOrder({commit,dispatch},payload){
+           try{
+                var order = {
+                    products:payload
+                }
+                var response = await axios.post('/orders',order);
+                dispatch('clearCart');
+                commit('setMessage',response.data.message);
+           } catch(e){
+               console.log(e);
+           }
         }
     },
     getters:{

@@ -23,7 +23,7 @@ router.post('/',checkAuth,(req,res,next)=>{
         user: req.userData.userId
     })
     order.save().then(order=>{
-        res.status(201).send({order});
+        res.status(201).send({order,message:'Your order has been submitted!'});
     }).catch(e=>{
         res.status(400).send(e);
     })

@@ -140,6 +140,9 @@
         } else{
           return total;
         }
+      },
+      loading(){
+        return this.$store.getters.getLoading;
       }
     },
     methods:{
@@ -163,7 +166,8 @@
               quantity:item.quantity
             };
         });
-        this.$store.dispatch('submitOrder',products);
+        this.$store.dispatch('submitOrder',products);        
+        this.dialog = false;
       }
     }
   }

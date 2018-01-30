@@ -158,6 +158,7 @@ import { required,minLength,email,sameAs,numeric } from 'vuelidate/lib/validator
       }
     },
     created(){
+      this.$store.commit('setError',null);
       if(this.user !== null){
         this.$router.push('/');
       }

@@ -1,6 +1,15 @@
 <template>
   <div>
-    <v-carousel style="height:90vh">
+    <v-layout row style="margin-top:170px" v-if="loading">
+      <v-flex xs6 offset-xs3 class='text-xs-center'>
+        <v-progress-circular 
+        :width="3"
+        :size="70"
+        indeterminate color="primary"></v-progress-circular>
+      </v-flex>
+    </v-layout>
+    <v-layout column>
+      <v-carousel style="height:90vh">
       <v-carousel-item style="cursor:pointer" v-for="product in products" :src="product.imageUrl" :key="product._id">
         <h2 class="carousel-caption">{{product.name}}</h2>
       </v-carousel-item>
@@ -27,6 +36,7 @@
         </v-flex>
       </v-layout>
     </v-container>
+    </v-layout>
   </div>
 </template>
 <script>
@@ -37,6 +47,9 @@
       },
       featuredProducts() {
         return this.$store.getters.getFeaturedProducts
+      },
+      loading(){
+        return this.$store.getters.getLoading;
       }
     }
   }

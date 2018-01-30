@@ -46,7 +46,7 @@
         <v-divider></v-divider>
         <v-data-table
             v-bind:headers="headers"
-            :items="cart"
+            :items="cart || []"
             hide-actions
             class="elevation-1"
           >
@@ -66,7 +66,34 @@
         </v-data-table>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn flat primary @click="menu = false">checkout</v-btn>
+          <v-dialog v-model="dialog" persistent max-width="390">
+            <v-btn flat primary slot="activator" @click="menu = false">checkout</v-btn>
+            <v-card>
+              <v-card-title class="headline">Your Order</v-card-title>
+              <v-card-text>
+                  <v-data-table
+                    v-bind:headers="headers"
+                    :items="cart"
+                    hide-actions
+                    class="elevation-1"
+                  >
+                  <template slot="items" slot-scope="props">
+                    <td>{{ props.item.name }}</td>
+                    <td class="text-xs-right">{{ props.item.price | currency }}</td>
+                    <td class="text-xs-right">{{ props.item.quantity}}</td>
+                  </template>
+                </v-data-table>
+                <v-card-title>
+                  <h3>Total: {{totalBill | currency}}</h3>
+                </v-card-title>
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="primary" flat @click='submitOrder(cart)'>Submit order</v-btn>
+                <v-btn color="error" flat @click.native="dialog = false">Cancel</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
           <v-btn flat error @click="clearCart">Clear cart</v-btn>
         </v-card-actions>
       </v-card>
@@ -87,9 +114,10 @@
     props:['userData'],
     data(){
       return{
+        dialog: false,
         menu: false,
         headers: [
-          { text: 'Product', sortable: false, value: 'name', align:'center' },
+          { text: 'Product', value: 'name', align:'center' },
           { text: 'Price', value: 'price' },
           { text: 'Quantity', value: 'quantity' }
         ],
@@ -101,6 +129,17 @@
       },
       totalItems(){
         return this.$store.getters.getTotalItems;
+      },
+      totalBill(){
+        var total =0;
+        if(this.cart){
+          this.cart.forEach(item => {
+            total += item.quantity*item.price;
+          });
+          return total;
+        } else{
+          return total;
+        }
       }
     },
     methods:{
@@ -116,6 +155,15 @@
       },
       addToCart(product){
         this.$store.dispatch('addToCart',product);
+      },
+      submitOrder(cart){
+        var products = cart.map(item=>{
+          return {
+              product:item._id,
+              quantity:item.quantity
+            };
+        });
+        this.$store.dispatch('submitOrder',products);
       }
     }
   }

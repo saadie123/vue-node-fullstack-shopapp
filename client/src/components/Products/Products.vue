@@ -1,8 +1,15 @@
 <template>
   <v-container>
-    <v-layout>
-      <v-flex xs12 sm12 md2 mr-5>
-       
+    <v-layout row style="margin-top:170px" v-if="loading">
+      <v-flex xs6 offset-xs3 class='text-xs-center'>
+        <v-progress-circular 
+        :width="3"
+        :size="70"
+        indeterminate color="primary"></v-progress-circular>
+      </v-flex>
+    </v-layout>
+    <v-layout v-else>
+      <v-flex xs12 sm12 md2 mr-5>  
         <v-card>
           <v-card-title>
             <v-text-field
@@ -75,6 +82,9 @@
       },
       cart(){
         return this.$store.getters.getCart;
+      },
+      loading(){
+        return this.$store.getters.getLoading;
       }
     },
     methods:{

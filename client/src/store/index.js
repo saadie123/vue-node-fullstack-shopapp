@@ -2,6 +2,8 @@ import Vuex from 'vuex';
 import Vue from 'vue';
 import axios from 'axios';
 
+axios.defaults.baseURL='http://localhost:5050';
+
 Vue.use(Vuex);
 const store = new Vuex.Store({
     state:{
@@ -47,29 +49,35 @@ const store = new Vuex.Store({
     },
     actions:{
       async loadProducts({commit}){
+          commit('setLoading',true);          
           try{
-            const response = await axios.get('http://localhost:5050/products');
-            var payload = response.data.products;
-            commit('setProducts',payload);   
+              const response = await axios.get('/products');
+              commit('setLoading',false);            
+              var payload = response.data.products;
+              commit('setProducts',payload);   
           }catch(e){
+              commit('setLoading',false);              
               console.log(e);
           }
            
         },
        async loadCategories({commit}){
-          try{
-            const response = await axios.get('http://localhost:5050/categories')
-            console.log(response);
-            var payload = response.data.categories;
-            commit('setCategories',payload);
-          } catch(e){
-              console.log(e);
-          }
+           commit('setLoading',true);           
+           try{
+               const response = await axios.get('/categories');
+               commit('setLoading',false);              
+               console.log(response);
+               var payload = response.data.categories;
+               commit('setCategories',payload);
+            } catch(e){
+               commit('setLoading',false);   
+               console.log(e);
+            }
         },
        async registerUser({commit},payload){
            commit('setLoading',true);               
            try{
-            const response = await axios.post('http://localhost:5050/users/signup',payload);
+            const response = await axios.post('/users/signup',payload);
             commit('setLoading',false);
             localStorage.setItem('token',response.data.token);
             localStorage.setItem('userData',JSON.stringify(response.data.userData));
@@ -87,10 +95,11 @@ const store = new Vuex.Store({
        async loginUser({commit},payload){
            commit('setLoading',true);   
            try{
-            const response = await axios.post('http://localhost:5050/users/login',payload);
+            const response = await axios.post('/users/login',payload);
             commit('setLoading',false);             
             localStorage.setItem('token',response.data.token);
             localStorage.setItem('userData',JSON.stringify(response.data.userData));
+            axios.defaults.headers.common['Authorization'] = 'Bearer '+response.data.token;    
             commit('setUserData',response.data.userData);
             commit('setToken',response.data.token);
             commit('setMessage',response.data.message);
@@ -119,12 +128,18 @@ const store = new Vuex.Store({
                     state.totalItems = 0;
                 }
                 else{
+                    axios.defaults.headers.common['Authorization'] = 'Bearer '+token;
                     commit('setToken',token);
                     commit('setUserData',userData);
                     state.cart = userCart;
-                    state.totalItems = state.cart.reduce((total,item)=>{
-                        return total+item.quantity;
-                    },0)
+                    if(state.cart === null){
+                        state.cart = [];
+                        state.totalItems = 0;
+                    } else{
+                        state.totalItems = state.cart.reduce((total,item)=>{
+                            return total+item.quantity;
+                        },0);
+                    }
                     commit('setMessage','You are already logged in!');
                 }
             }
@@ -164,9 +179,10 @@ const store = new Vuex.Store({
         removeFromCart({state},payload){
             var index = state.cart.indexOf(payload);
             payload.quantity--;
-            state.totalItems--;            
+            state.totalItems--;         
             if(payload.quantity === 0){
                 state.cart.splice(index,1);
+                localStorage.setItem('userCart',JSON.stringify(state.cart));                
             } else{
                 state.cart[index] = payload;
                 localStorage.setItem('userCart',JSON.stringify(state.cart));
@@ -176,6 +192,15 @@ const store = new Vuex.Store({
             state.cart = [];
             state.totalItems = 0;
             localStorage.removeItem('userCart');
+        },
+       async submitOrder({commit,state},payload){
+           commit('setLoading',true);
+            var order = {
+                products:payload
+            }
+            var response = await axios.post('/orders',order);
+           commit('setLoading',false);            
+            console.log(response);
         }
     },
     getters:{

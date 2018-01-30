@@ -46,7 +46,7 @@ router.delete('/:id',checkAuth,(req,res,next)=>{
        if(!order){
            return res.status(404).send("Order was not found");
        }
-       res.status(200).send({order});
+       res.status(200).send({order,message:'Your order has been cancelled!'});
    }).catch(e=>{
        res.status(400).send(e);
    });

@@ -80,8 +80,8 @@ const store = new Vuex.Store({
             commit('setLoading',false);           
             var payload = response.data.orders;
             commit('setOrders',payload);
-            console.log(state.orders);
            } catch(e){
+            commit('setLoading',false);               
             console.log(e);
            }         
         },
@@ -206,15 +206,29 @@ const store = new Vuex.Store({
         },
        async submitOrder({commit,dispatch},payload){
            try{
+                commit('setMessage','');               
                 var order = {
                     products:payload
                 }
-                var response = await axios.post('/orders',order);
+                const response = await axios.post('/orders',order);
                 dispatch('clearCart');
                 commit('setMessage',response.data.message);
            } catch(e){
                console.log(e);
            }
+        },
+        async deleteOrder({commit,state},payload){
+            try{
+                commit('setMessage','');            
+                const response = await axios.delete('/orders/'+payload);
+                commit('setMessage',response.data.message);
+                var newOrders =  state.orders.filter(order=>{
+                    return order._id !== payload;
+                });
+                commit('setOrders',newOrders);
+            } catch(e){
+                console.log(e);
+            }
         }
     },
     getters:{

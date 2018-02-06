@@ -66,7 +66,7 @@
         </v-data-table>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-dialog v-model="dialog" persistent max-width="390">
+          <v-dialog v-if="cart.length > 0"  v-model="dialog" persistent max-width="390">
             <v-btn flat primary slot="activator" @click="menu = false">checkout</v-btn>
             <v-card>
               <v-card-title class="headline">Your Order</v-card-title>
@@ -98,7 +98,7 @@
         </v-card-actions>
       </v-card>
     </v-menu>
-      <v-btn flat>
+      <v-btn router to='/profile' flat>
         <v-icon>face</v-icon>
         &nbsp; {{userData.name}}
       </v-btn>

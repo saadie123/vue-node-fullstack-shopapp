@@ -25,7 +25,7 @@
               type='password' 
               label="Password" ></v-text-field>
               <v-btn
-                primary
+                color='primary'
                 :loading="loading"
                 :disabled="loading || this.$v.$invalid"
                 type='submit'

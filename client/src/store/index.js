@@ -77,8 +77,8 @@ const store = new Vuex.Store({
            try{
             commit('setLoading',true);
             const response = await axios.get('/orders');
-            commit('setLoading',false);           
-            var payload = response.data.orders;
+            commit('setLoading',false);     
+            var payload = response.data.orders.sort((orderA,orderB) => orderA.createdAt < orderB.createdAt);
             commit('setOrders',payload);
            } catch(e){
             commit('setLoading',false);               
@@ -171,6 +171,20 @@ const store = new Vuex.Store({
             state.totalItems = 0;            
             commit('setMessage','You have logged out!');
         },
+       async updateProfile({commit},payload){
+            commit('setLoading',true);
+            try{
+                const response = await axios.post('users/profile',payload);
+                commit('setLoading',false);
+                commit('setUserData',payload);
+                commit('setMessage',response.data.message);
+                commit('setError',null);
+                localStorage.setItem('userData',JSON.stringify(payload));
+            } catch(e){
+                commit('setLoading',false);
+                commit('setError',e.response.data.error);                
+            }
+        },
         addToCart({commit, state},payload){
            var product = state.cart.find(item=>{
                 return item._id === payload._id;
@@ -242,9 +256,7 @@ const store = new Vuex.Store({
             return state.products.slice(0,4);
         },
         getFeaturedProducts:(state)=>{
-            return state.products.slice(0,6).sort((pA,pB)=>{
-                return pA.price > pB.price;
-            });
+            return state.products.slice(0,6).sort((pA,pB) => pA.price > pB.price);
         },
         getUserData(state){
             return state.userData;

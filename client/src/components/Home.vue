@@ -10,8 +10,15 @@
     </v-layout>
     <v-layout column>
       <v-carousel style="height:90vh">
-      <v-carousel-item style="cursor:pointer" v-for="product in products" :src="product.imageUrl" :key="product._id">
-        <h2 class="carousel-caption">{{product.name}}</h2>
+      <v-carousel-item style="cursor:pointer" 
+      v-for="product in products" 
+      :src="product.imageUrl" 
+      :key="product._id"
+      >
+        <h2 
+        class="carousel-caption"
+        router :to="{name:'Product',params:{id:product._id}}"
+        >{{product.name}}</h2>
       </v-carousel-item>
     </v-carousel>
     <v-container grid-list-md mt-5>
@@ -29,8 +36,8 @@
               </div>
             </v-card-title>
             <v-card-actions>
-              <v-btn flat color="orange">Add to cart</v-btn>
-              <v-btn flat router :to="{name:'Product',params:{id:product._id}}" color="orange">Explore</v-btn>
+              <v-btn v-if="user" @click="addToCart(product)" flat color="accent">Add to cart</v-btn>
+              <v-btn flat router :to="{name:'Product',params:{id:product._id}}" color="accent">Explore</v-btn>
             </v-card-actions>
           </v-card>
         </v-flex>
@@ -50,6 +57,14 @@
       },
       loading(){
         return this.$store.getters.getLoading;
+      },
+      user(){
+        return this.$store.getters.getUserData;
+      }
+    },
+    methods:{
+      addToCart(product){
+        this.$store.dispatch('addToCart',product);
       }
     }
   }

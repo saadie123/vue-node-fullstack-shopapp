@@ -7,6 +7,7 @@ import Product from '../components/Products/Product/Product.vue';
 import Orders from '../components/Orders/Orders.vue';
 import Login from '../components/User/Login.vue';
 import Register from '../components/User/Register.vue';
+import Profile from '../components/User/Profile.vue';
 import authGuard from '../guard/auth-guard';
 
 Vue.use(Router);
@@ -43,6 +44,12 @@ export default new Router({
       path: '/register',
       component: Register,
       name: 'Register'
+    },
+    {
+      path:'/profile',
+      component: Profile,
+      name:'Profile',
+      beforeEnter: authGuard      
     },
     {
       path: '/*',

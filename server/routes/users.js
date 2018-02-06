@@ -2,8 +2,9 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-const router = express.Router();
 
+const router = express.Router();
+const checkAuth = require('../middleware/check-auth');
 const User = require('../models/user');
 router.post('/signup',(req,res,next)=>{
     User.findOne({email:req.body.email}).then(user=>{
@@ -72,5 +73,17 @@ router.post('/login',(req,res,next)=>{
         });
     });
 });
+
+router.post('/profile',checkAuth,(req,res,next)=>{
+        const userData = req.body;
+        User.findOneAndUpdate({email:req.userData.email},{$set:userData},{new:true}).then(user=>{
+            if(!user){
+                return res.status(404).send({error:'User with this email was not found!'});
+            }
+            res.status(200).send({message:'Your profile has been updated!'});
+        }).catch(e=>{
+            res.status(400).send({error:'An account is already registered with this email!'});
+        });
+})
 
 module.exports = router;

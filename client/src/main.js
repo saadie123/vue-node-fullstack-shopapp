@@ -13,10 +13,10 @@ import currency from './filter/currency'
 Vue.filter('currency',currency);
 Vue.use(Vuelidate)
 Vue.use(Vuetify, { theme: {
-  primary: '#4caf50',
+  primary: '#009688',
   secondary: '#424242',
-  accent: '#82B1FF',
-  error: '#FF5252',
+  accent: '#e91e63',
+  error: '#f44336',
   info: '#2196F3',
   success: '#4CAF50',
   warning: '#FFC107'

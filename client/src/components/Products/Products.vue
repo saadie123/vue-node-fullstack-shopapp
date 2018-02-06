@@ -9,8 +9,9 @@
       </v-flex>
     </v-layout>
     <v-layout v-else>
-      <v-flex xs12 sm12 md2 mr-5>  
-        <v-card>
+      <v-flex xs12 sm12 md3 mr-5>  
+        <v-container>
+          <v-card>
           <v-card-title>
             <v-text-field
               name="input-1"
@@ -29,10 +30,12 @@
               flat>{{category.name}}</v-btn>
           </v-list>
         </v-card>
+        </v-container>
       </v-flex>
       <v-flex>
-        <v-layout row>
-          <v-flex mr-3 mb-2 xs12 sm12 md4 v-for="product in filteredList" :key='product._id'>
+        <v-container grid-list-lg>
+          <v-layout row wrap>
+            <v-flex  mb-2 xs12 sm12 md6 v-for="product in filteredList" :key='product._id'>
             <v-card>
               <v-card-media :src='product.imageUrl' height="200px">
               </v-card-media>
@@ -44,12 +47,13 @@
                 </div>
               </v-card-title>
               <v-card-actions>
-                <v-btn flat @click="addToCart(product)" color="orange">Add to cart</v-btn>
-                <v-btn flat router :to="{name:'Product',params:{id:product._id}}" color="orange">Explore</v-btn>
+                <v-btn v-if="user" flat @click="addToCart(product)" color="accent">Add to cart</v-btn>
+                <v-btn flat router :to="{name:'Product',params:{id:product._id}}" color="accent">Explore</v-btn>
               </v-card-actions>
             </v-card>
           </v-flex>
-        </v-layout>
+         </v-layout>
+        </v-container> 
       </v-flex>
     </v-layout>
   </v-container>
@@ -85,6 +89,9 @@
       },
       loading(){
         return this.$store.getters.getLoading;
+      },
+      user(){
+        return this.$store.getters.getUserData;
       }
     },
     methods:{
@@ -96,5 +103,34 @@
 
 </script>
 <style scoped>
+.move-enter-active{
+  animation-name: slideIn;
+  animation-duration: 0.5s;
+}
+.move-leave-active{
+  animation-name: slideOut;
+  animation-duration:0.5s;
+}
 
+@keyframes slideIn {
+    from{
+      transform: translateY(-20px);
+      opacity: 0;
+    }
+    to{
+      transform: translateY(0);
+      opacity: 1;
+    }
+}
+@keyframes slideOut {
+  from{
+      transform: translateY(0);
+      opacity: 1;
+    }
+  to{
+      transform: translateY(-20px);
+      opacity: 0;
+  }
+    
+}
 </style>

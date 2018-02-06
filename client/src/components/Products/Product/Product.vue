@@ -13,8 +13,8 @@
                 </div>
               </v-card-title>
               <v-card-actions>
-                <v-btn flat color="orange">Add to cart</v-btn>
-                <v-btn flat router :to="{name:'Products'}" color="orange">Go Back</v-btn>
+                <v-btn v-if="user" @click="addToCart(product)" flat color="accent">Add to cart</v-btn>
+                <v-btn flat router :to="{name:'Products'}" color="accent">Go Back</v-btn>
               </v-card-actions>
             </v-card>
       </v-flex>
@@ -28,8 +28,13 @@ export default {
           var filteredProduct = this.$store.getters.getProducts.filter((product=>{
             return this.$route.params.id === product._id
           }))[0];
-          console.log(filteredProduct)
           return filteredProduct;
+        },
+        addToCart(product){
+        this.$store.dispatch('addToCart',product);
+        },
+        user(){
+          return this.$store.getters.getUserData;
         }
     }
 }

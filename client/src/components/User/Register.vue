@@ -57,7 +57,7 @@
               type='password' 
               label="Confirm Password" ></v-text-field>
               <v-btn
-                primary
+                color='primary'
                 :loading="loading"
                 :disabled="loading || this.$v.$invalid"
                 @click="register"
@@ -67,7 +67,7 @@
                   <v-icon dark>cached</v-icon>
                 </span>
               </v-btn>     
-              <v-btn @click="clear" error>clear</v-btn>
+              <v-btn @click="clear" color='error'>clear</v-btn>
             </form>
           </v-container>
         </v-card>
